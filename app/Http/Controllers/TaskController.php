@@ -9,12 +9,14 @@ class TaskController extends Controller
 {
     public function index()
     {
-        return Task::all();
+        $tasks = Task::all();
+        return response()->json($tasks, 200);
     }
 
     public function show($id)
     {
-        return Task::findOrFail($id);
+        $task = Task::findOrFail($id);
+        return response()->json($task, 200);
     }
 
     public function store(Request $request)
@@ -26,7 +28,8 @@ class TaskController extends Controller
             'status' => 'nullable|boolean',
         ]);
 
-        return Task::create($validatedData);
+        $task = Task::create($validatedData);
+        return response()->json(['message' => 'Task created successfully', 'task' => $task], 201);
     }
 
     public function update(Request $request, $id)
@@ -40,26 +43,26 @@ class TaskController extends Controller
         ]);
 
         $task->update($validatedData);
-        return $task;
+        return response()->json(['message' => 'Task updated successfully', 'task' => $task], 200);
     }
+
     public function updatestatus(Request $request, Task $task)
-{
-    $request->validate([
-        'status' => 'required|boolean',
-    ]);
+    {
+        $request->validate([
+            'status' => 'required|boolean',
+        ]);
 
-    $task->status = $request->status;
-    $task->save();
+        $task->status = $request->status;
+        $task->save();
 
-    return response()->json($task, 200);
-}
-
+        return response()->json(['message' => 'Task status updated successfully', 'task' => $task], 200);
+    }
 
     public function destroy($id)
     {
         $task = Task::findOrFail($id);
         $task->delete();
 
-        return response()->json(['message' => 'Task deleted successfully']);
+        return response()->json(['message' => 'Task deleted successfully'], 200);
     }
 }
